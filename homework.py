@@ -1,3 +1,5 @@
+import math
+
 """
 Task 1
 Method overloading.
@@ -8,45 +10,45 @@ Also, create a simple generic function, which takes as input instance of a Cat o
 on input parameter.
 """
 
-#
-# class Animal:
-#     def __init__(self, name):
-#         self.name = name
-#
-#     def talk(self):
-#         raise NotImplementedError("Субклас должен имплементировать абстрактій метод!")
-#
-#
-# class Cat(Animal):
-#     voice = "Meov"
-#
-#     def __init__(self, name):
-#         super().__init__(name)
-#
-#     def talk(self):
-#         print(self.name + " says " + self.voice)
-#
-#
-# class Dog(Animal):
-#     voice = "Woof"
-#
-#     def __init__(self, name):
-#         super().__init__(name)
-#
-#     def talk(self):
-#         print(self.name + " says " + self.voice)
-#
-#
-# def changeVoice(animal):
-#     animal.voice = input("Enter new animal voice ")
-#
-#
-# if __name__ == "__main__":
-#     cat = Cat("Cat")
-#     dog = Dog("Dog")
-#     cat.talk()
-#     changeVoice(cat)
-#     cat.talk()
+
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def talk(self):
+        raise NotImplementedError("Субклас должен имплементировать абстрактій метод!")
+
+
+class Cat(Animal):
+    voice = "Meov"
+
+    def __init__(self, name):
+        super().__init__(name)
+
+    def talk(self):
+        print(self.name + " says " + self.voice)
+
+
+class Dog(Animal):
+    voice = "Woof"
+
+    def __init__(self, name):
+        super().__init__(name)
+
+    def talk(self):
+        print(self.name + " says " + self.voice)
+
+
+def changeVoice(animal):
+    animal.voice = input("Enter new animal voice ")
+
+
+if __name__ == "__main__":
+    cat = Cat("Cat")
+    dog = Dog("Dog")
+    cat.talk()
+    changeVoice(cat)
+    cat.talk()
 
 """
 Task 2
@@ -93,9 +95,7 @@ class Library:
         if original:
             self.books.append(book)
             self.authors.add(book.author.name)
-
-
-
+            book.author.books.append(book.name)
 
     def __str__(self):
         for book in self.books:
@@ -121,11 +121,13 @@ class Book:
         self.author = author
 
     def __str__(self):
-        return f"Название: {self.name}\nГод: {self.year}\nАвтор: {self.author.name}\nКоличество: {self.amountBooks}\n\n"
+        return f"Название: {self.name}\nГод: {self.year}\nАвтор: {self.author.name}\nКоличество: {self.amountBooks}\n" \
+               f"Книги этого автора: {self.author.books}\n\n"
 
     def __eq__(self, other):
         if isinstance(other, Book):
             return self.name == other.name
+
 
 class Author:
     def __init__(self, name, country, birthday, books):
@@ -135,14 +137,14 @@ class Author:
         self.books = books
 
     def __str__(self):
-        return f"Имя: {self.name}\nСтрана: {self.country}\nДень рождения: {self.birthday}\n\n"
+        return f"Имя: {self.name}\nСтрана: {self.country}\nДень рождения: {self.birthday}\n\n" \
+               f"books: {self.books}"
 
 
-if __name__ == "main":
-    rowling = Author("Джоан Роулинг", "Великобритания", "31 июля 1965г", ["Гарри Поттер и философский камень",
-                                                                          "Гарри Поттер и тайная комната"])
-    king = Author("Стивен Кинг", "США", "21 сентября 1947г", ["Стрелок", "Извлечение троих"])
-    orwell = Author("Джордж Оруел", "Великобритания", "25 июня 1903г", ["Скотный двор", "1984"])
+if __name__ == "__main__":
+    rowling = Author("Джоан Роулинг", "Великобритания", "31 июля 1965г", [])
+    king = Author("Стивен Кинг", "США", "21 сентября 1947г", [])
+    orwell = Author("Джордж Оруел", "Великобритания", "25 июня 1903г", [])
     firstLibrary = Library("FirstLibrary", [], set())
     firstLibrary.new_book(Book("Гарри Поттер и философский камень", 1997, rowling))
     firstLibrary.new_book(Book("Гарри Поттер и философский камень", 1997, rowling))
@@ -157,3 +159,81 @@ if __name__ == "main":
     firstLibrary.__str__()
     firstLibrary.group_by_author("Джордж Оруел")
     firstLibrary.group_by_year(1997)
+
+
+"""
+Task 3
+Fraction
+Create a Fraction class, which will represent all basic arithmetic logic for fractions (+, -, /, *) 
+with appropriate checking and error handling
+```
+class Fraction:
+pass
+x = Fraction(1/2)
+y = Fraction(1/4)
+x + y == Fraction(3/4)
+"""
+
+
+class Fraction:
+    def __init__(self, number):
+        self.number = number.split('/')
+        self.num = int(self.number[0])
+        self.det = int(self.number[1])
+
+    def __add__(self, other):
+        if self.det == other.det:
+            num = self.num + other.num
+            det = self.det
+        else:
+            num = self.num * other.det + other.num * self.det
+            det = self.det * other.det
+            i = math.gcd(num, det)
+            num = num // i
+            det = det // i
+        return f'{num}/{det}'
+
+    def __sub__(self, other):
+        if self.det == other.det:
+            num = self.num - other.num
+            det = self.det
+        else:
+            num = self.num * other.det - other.num * self.det
+            det = self.det * other.det
+            i = math.gcd(num, det)
+            num = num // i
+            det = det // i
+        return f'{num}/{det}'
+
+    def __mul__(self, other):
+        num = self.num * other.num
+        det = self.det * other.det
+        i = math.gcd(num, det)
+        num = num // i
+        det = det // i
+        return f'{num}/{det}'
+
+    def __floordiv__(self, other):
+        num = self.num * other.det
+        det = self.det * other.num
+        i = math.gcd(num, det)
+        num = num // i
+        det = det // i
+        if det != 1:
+            return f'{num}/{det}'
+        else:
+            return num
+
+
+    def __str__(self):
+        return f"{self.num} / {self.det}"
+
+
+if __name__ == "__main__":
+    x = Fraction('1/2')
+    y = Fraction('1/4')
+    print(x + y)
+    print(x - y)
+    print(x * y)
+    d = x // y
+    print(d)
